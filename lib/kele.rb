@@ -21,12 +21,25 @@ class Kele
   end
 
   def get_mentor_availability(mentor_id)
-    @id = mentor_id
-    response = self.class.get("#{@url}/mentors/#{@id}/student_availability",
+    response = self.class.get("#{@url}/mentors/#{mentor_id}/student_availability",
       headers: { "authorization" => @auth_token})
     hash = JSON.parse(response.body)
     hash.each do |time_slot|
       p time_slot["starts_at"]
     end
+  end
+
+  def get_messages(page = nil)
+    response = self.class.get("#{@url}/message_threads",
+      headers: { "authorization" => @auth_token})
+    JSON.parse(response.body)
+  end
+
+  def create_message(sender, recipient_id, token, subject, stripped_text)
+    response = self.class.post("#{@url}/messages",
+      headers: { "authorization" => @auth_token },
+      body: {sender: sender, recipient_id: recipient_id,
+      token: token, subject: subject, stripped_text: stripped_text })
+    puts response["message"] if response["message"]
   end
 end
