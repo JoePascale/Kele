@@ -29,21 +29,18 @@ class Kele
     end
   end
 
-  def get_messages(*page)
+  def get_messages(page = nil)
     response = self.class.get("#{@url}/message_threads",
-      headers: { "authorization" => @auth_token})
-    if page.empty?
-      JSON.parse(response.body)
-    else
-      JSON.parse(response.body["page"])
-    end
+      headers: { "authorization" => @auth_token},
+      body: { page: page })
+    JSON.parse(response.body)
   end
 
-  def create_message(sender, recipient_id, token, subject, stripped_text)
+  def create_message(sender, recipient_id, subject, stripped_text)
     response = self.class.post("#{@url}/messages",
       headers: { "authorization" => @auth_token },
       body: { sender: sender, recipient_id: recipient_id,
-      token: token, subject: subject, stripped_text: stripped_text })
+      subject: subject, "stripped-text" => stripped_text })
     puts response["message"] if response["message"]
   end
 
